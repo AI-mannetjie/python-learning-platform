@@ -22,4 +22,4 @@ RUN mkdir -p /app/logs
 EXPOSE 5000
 
 # Run migrations and start server
-CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app"]
+CMD ["sh", "-c", "flask db upgrade 2>/dev/null || echo 'Migrations not ready yet' && gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app"]

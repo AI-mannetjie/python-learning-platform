@@ -82,8 +82,23 @@ fi
 
 # Run database migrations
 echo ""
-echo "🗄️  Running database migrations..."
-docker-compose exec -T backend flask db upgrade
+echo "🗄️  Setting up database migrations..."
+
+# Check if migrations directory exists, if not initialize it
+if docker-compose exec -T backend test -d migrations; then
+    echo "Migrations directory exists, running upgrade..."
+    docker-compose exec -T backend flask db upgrade
+else
+    echo "Initializing migrations for the first time..."
+    docker-compose exec -T backend flask db init
+    docker-compose exec -T backend flask db migrate -m "Initial migration"
+    docker-compose exec -T backend flask db upgrade
+fi
+
+# Seed the database with sample data
+echo ""
+echo "🌱 Seeding database with sample data..."
+docker-compose exec -T backend python seed_db.py
 
 echo ""
 echo "=================================="

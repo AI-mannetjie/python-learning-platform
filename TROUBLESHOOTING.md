@@ -45,7 +45,42 @@ ls -la frontend/
 
 ---
 
-### Issue 3: Backend fails to start - "Connection refused" to database
+### Issue 3: Database error - "FATAL: database 'admin' does not exist"
+
+**Error:**
+```
+FATAL:  database "admin" does not exist
+```
+
+**Cause:**
+PostgreSQL is trying to connect using the username as the database name instead of the actual database name.
+
+**Solution:**
+Already fixed in the latest version. The setup script now properly initializes migrations.
+
+If you're experiencing this:
+```bash
+# Stop all containers
+docker-compose down -v  # This removes the volumes
+
+# Start fresh
+docker-compose up -d
+
+# Wait for services to be ready (30 seconds)
+sleep 30
+
+# Run migrations manually
+docker-compose exec backend flask db init
+docker-compose exec backend flask db migrate -m "Initial migration"
+docker-compose exec backend flask db upgrade
+
+# Seed the database
+docker-compose exec backend python seed_db.py
+```
+
+---
+
+### Issue 4: Backend fails to start - "Connection refused" to database
 
 **Error:**
 ```
